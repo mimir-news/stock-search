@@ -25,7 +25,17 @@ type stockSvc struct {
 
 // Search attempts to match a query against the stored list of stocks.
 func (s *stockSvc) Search(query string, limit int) ([]stock.Stock, error) {
-	return s.stockRepo.Search(query, limit)
+	stocks, err := s.stockRepo.Search(query, limit)
+	if err != nil {
+		return nil, err
+	}
+
+	dtos := make([]stock.Stock, 0, len(stocks))
+	for _, s := range stocks {
+		dtos = append(dtos, s.ToDTO())
+	}
+
+	return dtos, nil
 }
 
 // RankStocks counts stock mentions and updates all stocks accordingly.

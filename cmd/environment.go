@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"log"
 
+	"github.com/mimir-news/stock-search/pkg/repository"
 	"github.com/mimir-news/stock-search/pkg/service"
 )
 
@@ -19,9 +20,11 @@ func setupEnv(conf config) *env {
 		log.Fatal(err)
 	}
 
+	stockRepo := repository.NewStockRepo(db)
+
 	return &env{
 		db:       db,
-		stockSvc: service.NewStockService(nil),
+		stockSvc: service.NewStockService(stockRepo),
 		adminID:  conf.adminID,
 	}
 }

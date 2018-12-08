@@ -13,6 +13,7 @@ import (
 
 	"github.com/mimir-news/pkg/httputil/auth"
 	"github.com/mimir-news/pkg/id"
+	"github.com/mimir-news/stock-search/pkg/domain"
 	"github.com/mimir-news/stock-search/pkg/repository"
 	"github.com/mimir-news/stock-search/pkg/service"
 	"github.com/stretchr/testify/assert"
@@ -27,9 +28,9 @@ func TestHandleStockSearch(t *testing.T) {
 	clientID := id.New()
 	query := "A"
 
-	expectedStocks := []stock.Stock{
-		stock.Stock{Symbol: "AAPL"},
-		stock.Stock{Symbol: "AMD"},
+	expectedStocks := []domain.Stock{
+		domain.Stock{Symbol: "AAPL"},
+		domain.Stock{Symbol: "AMD"},
 	}
 
 	stockRepo := &repository.MockStockRepo{
