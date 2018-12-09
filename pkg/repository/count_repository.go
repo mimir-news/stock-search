@@ -18,6 +18,13 @@ type CountRepo interface {
 	CountAll() ([]domain.Stock, error)
 }
 
+// NewCountRepo returns a defult implementation of CountRepo.
+func NewCountRepo(db *sql.DB) CountRepo {
+	return &pgCountRepo{
+		db: db,
+	}
+}
+
 type pgCountRepo struct {
 	db *sql.DB
 }
@@ -75,17 +82,25 @@ type MockCountRepo struct {
 	CountOneStock domain.Stock
 	CountOneErr   error
 
-	CountAllStocks []domain.Stock
-	CountAllErr    error
+	CountAllStocks    []domain.Stock
+	CountAllErr       error
+	CountAllWasCalled bool
 }
 
-// CountRepo mock CountOne implementation.
-func (cr *MockCountRepo) CountRepo(symbol string) (domain.Stock, error) {
+// UnsetArgs sets all repo arguments to their default value.
+func (cr *MockCountRepo) UnsetArgs() {
+	cr.CountOneArg = ""
+	cr.CountAllWasCalled = false
+}
+
+// CountOne mock CountOne implementation.
+func (cr *MockCountRepo) CountOne(symbol string) (domain.Stock, error) {
 	cr.CountOneArg = symbol
 	return cr.CountOneStock, cr.CountOneErr
 }
 
 // CountAll mock CountAll implementation.
 func (cr *MockCountRepo) CountAll() ([]domain.Stock, error) {
+	cr.CountAllWasCalled = true
 	return cr.CountAllStocks, cr.CountAllErr
 }

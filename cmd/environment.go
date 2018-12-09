@@ -21,10 +21,11 @@ func setupEnv(conf config) *env {
 	}
 
 	stockRepo := repository.NewStockRepo(db)
+	countRepo := repository.NewCountRepo(db)
 
 	return &env{
 		db:       db,
-		stockSvc: service.NewStockService(stockRepo),
+		stockSvc: service.NewStockService(stockRepo, countRepo),
 		adminID:  conf.adminID,
 	}
 }

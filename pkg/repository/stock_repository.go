@@ -85,25 +85,31 @@ func mapRowsToStocks(rows *sql.Rows) ([]domain.Stock, error) {
 
 // MockStockRepo mock implementation for StockRepo.
 type MockStockRepo struct {
-	SaveArg domain.Stock
-	SaveErr error
+	SaveArg         domain.Stock
+	SaveErr         error
+	SaveInvocations int
 
-	SearchArgQuery string
-	SearchArgLimit int
-	SearchStocks   []domain.Stock
-	SearchErr      error
+	SearchArgQuery    string
+	SearchArgLimit    int
+	SearchStocks      []domain.Stock
+	SearchErr         error
+	SearchInvocations int
 }
 
 // UnsetArgs sets all repo arguments to their default value.
 func (sr *MockStockRepo) UnsetArgs() {
 	sr.SaveArg = domain.Stock{}
+	sr.SaveInvocations = 0
+
 	sr.SearchArgQuery = ""
 	sr.SearchArgLimit = 0
+	sr.SearchInvocations = 0
 }
 
 // Save mock implementation of saving a stock.
 func (sr *MockStockRepo) Save(s domain.Stock) error {
 	sr.SaveArg = s
+	sr.SaveInvocations++
 	return sr.SaveErr
 }
 
@@ -111,5 +117,6 @@ func (sr *MockStockRepo) Save(s domain.Stock) error {
 func (sr *MockStockRepo) Search(query string, limit int) ([]domain.Stock, error) {
 	sr.SearchArgQuery = query
 	sr.SearchArgLimit = limit
+	sr.SearchInvocations++
 	return sr.SearchStocks, sr.SearchErr
 }

@@ -37,7 +37,7 @@ func TestHandleStockSearch(t *testing.T) {
 	}
 
 	conf := getTestConfig()
-	server := newServer(getTestEnv(conf, stockRepo), conf)
+	server := newServer(getTestEnv(conf, stockRepo, nil), conf)
 	token := getTestToken(conf, userID, clientID)
 
 	req := createTestGetRequest(clientID, token, "/v1/stocks?query="+query)
@@ -81,15 +81,87 @@ func TestHandleStockSearch(t *testing.T) {
 
 }
 
+func TestHandleStockRanking(t *testing.T) {
+	assert := assert.New(t)
+
+	userID := id.New()
+	clientID := id.New()
+	symbol := "AAPL"
+
+	coutedStock := domain.Stock{Symbol: symbol, Count: 10}
+
+	stockRepo := &repository.MockStockRepo{}
+	countRepo := &repository.MockCountRepo{
+		CountOneStock: coutedStock,
+	}
+
+	conf := getTestConfig()
+	server := newServer(getTestEnv(conf, stockRepo, countRepo), conf)
+	token := getTestToken(conf, userID, clientID)
+
+	req := createTestPutRequest(clientID, token, "/v1/stocks/"+symbol)
+	res := performTestRequest(server.Handler, req)
+
+	assert.Equal(http.StatusOK, res.Code)
+	assert.Equal(symbol, countRepo.CountOneArg)
+	savedStock := stockRepo.SaveArg
+	assert.Equal(symbol, savedStock.Symbol)
+	assert.Equal(coutedStock.Count, savedStock.Count)
+
+	countRepo.CountOneErr = repository.ErrNoSuchStock
+	stockRepo.UnsetArgs()
+	req = createTestPutRequest(clientID, token, "/v1/stocks/MISSING")
+	res = performTestRequest(server.Handler, req)
+
+	assert.Equal(http.StatusNotFound, res.Code)
+	assert.Equal("MISSING", countRepo.CountOneArg)
+	savedStock = stockRepo.SaveArg
+	assert.Equal("", savedStock.Symbol)
+	assert.Equal(int64(0), savedStock.Count)
+
+}
+
+func TestHandleStocksRanking(t *testing.T) {
+	assert := assert.New(t)
+
+	userID := id.New()
+	clientID := id.New()
+
+	coutedStocks := []domain.Stock{
+		domain.Stock{Symbol: "AAPL", Count: 10},
+		domain.Stock{Symbol: "GOOG", Count: 20},
+	}
+
+	stockRepo := &repository.MockStockRepo{}
+	countRepo := &repository.MockCountRepo{
+		CountAllStocks: coutedStocks,
+	}
+
+	conf := getTestConfig()
+	server := newServer(getTestEnv(conf, stockRepo, countRepo), conf)
+	token := getTestToken(conf, userID, clientID)
+
+	req := createTestPutRequest(clientID, token, "/v1/stocks")
+	res := performTestRequest(server.Handler, req)
+
+	assert.Equal(http.StatusOK, res.Code)
+	assert.True(countRepo.CountAllWasCalled)
+	savedStock := stockRepo.SaveArg
+	assert.Equal(len(coutedStocks), stockRepo.SaveInvocations)
+	assert.Equal("GOOG", savedStock.Symbol)
+	assert.Equal(int64(20), savedStock.Count)
+
+}
+
 func performTestRequest(r http.Handler, req *http.Request) *httptest.ResponseRecorder {
 	w := httptest.NewRecorder()
 	r.ServeHTTP(w, req)
 	return w
 }
 
-func getTestEnv(conf config, stockRepo repository.StockRepo) *env {
+func getTestEnv(conf config, stockRepo repository.StockRepo, countRepo repository.CountRepo) *env {
 	return &env{
-		stockSvc: service.NewStockService(stockRepo),
+		stockSvc: service.NewStockService(stockRepo, countRepo),
 	}
 }
 

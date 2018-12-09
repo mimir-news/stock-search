@@ -16,9 +16,10 @@ type StockService interface {
 }
 
 // NewStockService creates a StockService using the default implementation.
-func NewStockService(stockRepo repository.StockRepo) StockService {
+func NewStockService(stockRepo repository.StockRepo, countRepo repository.CountRepo) StockService {
 	return &stockSvc{
 		stockRepo: stockRepo,
+		countRepo: countRepo,
 	}
 }
 
@@ -63,7 +64,7 @@ func (svc *stockSvc) RankStocks() error {
 func (svc *stockSvc) RankStock(symbol string) error {
 	s, err := svc.countRepo.CountOne(symbol)
 	if err == repository.ErrNoSuchStock {
-		return httputil.NewError(err.Error(), http.StatusBadRequest)
+		return httputil.NewError(err.Error(), http.StatusNotFound)
 	} else if err != nil {
 		return err
 	}
