@@ -78,29 +78,32 @@ func mapRowsToCountedStocks(rows *sql.Rows) ([]domain.Stock, error) {
 
 // MockCountRepo mock implementation of CountRepo.
 type MockCountRepo struct {
-	CountOneArg   string
-	CountOneStock domain.Stock
-	CountOneErr   error
+	CountOneArg         string
+	CountOneStock       domain.Stock
+	CountOneErr         error
+	CountOneInvocations int
 
-	CountAllStocks    []domain.Stock
-	CountAllErr       error
-	CountAllWasCalled bool
+	CountAllStocks      []domain.Stock
+	CountAllErr         error
+	CountAllInvocations int
 }
 
 // UnsetArgs sets all repo arguments to their default value.
 func (cr *MockCountRepo) UnsetArgs() {
 	cr.CountOneArg = ""
-	cr.CountAllWasCalled = false
+	cr.CountOneInvocations = 0
+	cr.CountAllInvocations = 0
 }
 
 // CountOne mock CountOne implementation.
 func (cr *MockCountRepo) CountOne(symbol string) (domain.Stock, error) {
 	cr.CountOneArg = symbol
+	cr.CountOneInvocations++
 	return cr.CountOneStock, cr.CountOneErr
 }
 
 // CountAll mock CountAll implementation.
 func (cr *MockCountRepo) CountAll() ([]domain.Stock, error) {
-	cr.CountAllWasCalled = true
+	cr.CountAllInvocations++
 	return cr.CountAllStocks, cr.CountAllErr
 }

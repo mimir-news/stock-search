@@ -84,7 +84,6 @@ func TestHandleStockSearch(t *testing.T) {
 func TestHandleStockRanking(t *testing.T) {
 	assert := assert.New(t)
 
-	userID := id.New()
 	clientID := id.New()
 	symbol := "AAPL"
 
@@ -97,7 +96,7 @@ func TestHandleStockRanking(t *testing.T) {
 
 	conf := getTestConfig()
 	server := newServer(getTestEnv(conf, stockRepo, countRepo), conf)
-	token := getTestToken(conf, userID, clientID)
+	token := getTestToken(conf, testAdminID, clientID)
 
 	req := createTestPutRequest(clientID, token, "/v1/stocks/"+symbol)
 	res := performTestRequest(server.Handler, req)
@@ -119,12 +118,18 @@ func TestHandleStockRanking(t *testing.T) {
 	assert.Equal("", savedStock.Symbol)
 	assert.Equal(int64(0), savedStock.Count)
 
+	countRepo.UnsetArgs()
+	wrongToken := getTestToken(conf, id.New(), clientID)
+	req = createTestPutRequest(clientID, wrongToken, "/v1/stocks/MISSING")
+	res = performTestRequest(server.Handler, req)
+	assert.Equal(http.StatusForbidden, res.Code)
+	assert.Equal(0, countRepo.CountOneInvocations)
+
 }
 
 func TestHandleStocksRanking(t *testing.T) {
 	assert := assert.New(t)
 
-	userID := id.New()
 	clientID := id.New()
 
 	coutedStocks := []domain.Stock{
@@ -139,17 +144,24 @@ func TestHandleStocksRanking(t *testing.T) {
 
 	conf := getTestConfig()
 	server := newServer(getTestEnv(conf, stockRepo, countRepo), conf)
-	token := getTestToken(conf, userID, clientID)
+	token := getTestToken(conf, testAdminID, clientID)
 
 	req := createTestPutRequest(clientID, token, "/v1/stocks")
 	res := performTestRequest(server.Handler, req)
 
 	assert.Equal(http.StatusOK, res.Code)
-	assert.True(countRepo.CountAllWasCalled)
+	assert.Equal(1, countRepo.CountAllInvocations)
 	savedStock := stockRepo.SaveArg
 	assert.Equal(len(coutedStocks), stockRepo.SaveInvocations)
 	assert.Equal("GOOG", savedStock.Symbol)
 	assert.Equal(int64(20), savedStock.Count)
+
+	countRepo.UnsetArgs()
+	wrongToken := getTestToken(conf, id.New(), clientID)
+	req = createTestPutRequest(clientID, wrongToken, "/v1/stocks")
+	res = performTestRequest(server.Handler, req)
+	assert.Equal(http.StatusForbidden, res.Code)
+	assert.Equal(0, countRepo.CountAllInvocations)
 
 }
 
@@ -162,6 +174,7 @@ func performTestRequest(r http.Handler, req *http.Request) *httptest.ResponseRec
 func getTestEnv(conf config, stockRepo repository.StockRepo, countRepo repository.CountRepo) *env {
 	return &env{
 		stockSvc: service.NewStockService(stockRepo, countRepo),
+		adminID:  conf.adminID,
 	}
 }
 
