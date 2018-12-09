@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/mimir-news/pkg/httputil"
@@ -32,10 +33,23 @@ func (e *env) handleStockSearch(c *gin.Context) {
 }
 
 func (e *env) handleStocksRanking(c *gin.Context) {
+	err := e.stockSvc.RankStocks()
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
 	httputil.SendOK(c)
 }
 
 func (e *env) handleStockRanking(c *gin.Context) {
+	symbol := strings.ToUpper(c.Param("symbol"))
+	err := e.stockSvc.RankStock(symbol)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
 	httputil.SendOK(c)
 }
 

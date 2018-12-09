@@ -9,10 +9,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mimir-news/pkg/schema/stock"
-
 	"github.com/mimir-news/pkg/httputil/auth"
 	"github.com/mimir-news/pkg/id"
+	"github.com/mimir-news/pkg/schema/stock"
 	"github.com/mimir-news/stock-search/pkg/domain"
 	"github.com/mimir-news/stock-search/pkg/repository"
 	"github.com/mimir-news/stock-search/pkg/service"

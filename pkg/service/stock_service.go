@@ -1,6 +1,9 @@
 package service
 
 import (
+	"net/http"
+
+	"github.com/mimir-news/pkg/httputil"
 	"github.com/mimir-news/pkg/schema/stock"
 	"github.com/mimir-news/stock-search/pkg/repository"
 )
@@ -21,11 +24,12 @@ func NewStockService(stockRepo repository.StockRepo) StockService {
 
 type stockSvc struct {
 	stockRepo repository.StockRepo
+	countRepo repository.CountRepo
 }
 
 // Search attempts to match a query against the stored list of stocks.
-func (s *stockSvc) Search(query string, limit int) ([]stock.Stock, error) {
-	stocks, err := s.stockRepo.Search(query, limit)
+func (svc *stockSvc) Search(query string, limit int) ([]stock.Stock, error) {
+	stocks, err := svc.stockRepo.Search(query, limit)
 	if err != nil {
 		return nil, err
 	}
@@ -39,11 +43,30 @@ func (s *stockSvc) Search(query string, limit int) ([]stock.Stock, error) {
 }
 
 // RankStocks counts stock mentions and updates all stocks accordingly.
-func (s *stockSvc) RankStocks() error {
+func (svc *stockSvc) RankStocks() error {
+	countedStocks, err := svc.countRepo.CountAll()
+	if err != nil {
+		return err
+	}
+
+	for _, s := range countedStocks {
+		err := svc.stockRepo.Save(s)
+		if err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 
 // RankStocks counts a single stocks mentions and updates all it accordingly.
-func (s *stockSvc) RankStock(symbol string) error {
-	return nil
+func (svc *stockSvc) RankStock(symbol string) error {
+	s, err := svc.countRepo.CountOne(symbol)
+	if err == repository.ErrNoSuchStock {
+		return httputil.NewError(err.Error(), http.StatusBadRequest)
+	} else if err != nil {
+		return err
+	}
+
+	return svc.stockRepo.Save(s)
 }
