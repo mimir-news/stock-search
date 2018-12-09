@@ -1,0 +1,20 @@
+{
+    "env": {
+        "clientId": "02dfaa30-850e-45de-92fb-b22019730578",
+        "authToken": ""
+    },
+    "tests": [
+        {
+            "name": "check-service-health",
+            "positive": true,
+            "request": {
+                "method": "GET",
+                "path": "/health",
+                "withToken": false
+            },
+            "response": {
+                "status": 200
+            }
+        }
+    ]
+}
