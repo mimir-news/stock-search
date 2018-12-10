@@ -45,13 +45,13 @@ SVC_PORT=$(sh ./conf/random_port.sh)
 echo "Starting service: $SVC_CONTAINER_NAME on port: $SVC_PORT"
 docker run -d --name $SVC_CONTAINER_NAME \
     --network $NETWORK_NAME -p $SVC_PORT:8080 \
-    -e ADMIN_USER_ID="admin-id" \
+    -e ADMIN_USER_ID="test-admin-id" \
     -e TOKEN_SECRETS_FILE=$TOKEN_SECRETS_FILE \
     -e SERVICE_PORT=8080 \
     -e DB_HOST=$DB_CONTAINER_NAME \
     -e DB_PORT=5432 \
-    -e DB_NAME="streamlistener" \
-    -e DB_USERNAME=$SVC_NAME \
+    -e DB_NAME="streamlistner" \
+    -e DB_USERNAME="stocksearch" \
     -e DB_PASSWORD='password' \
     -v "$PWD/conf/token_secrets.json":$TOKEN_SECRETS_FILE:ro \
     $SVC_IMAGE

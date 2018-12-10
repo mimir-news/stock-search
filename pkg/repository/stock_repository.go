@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	errInsertStockFailed = errors.New("Insting stock failed")
+	errInsertStockFailed = errors.New("Inserting stock stock failed")
 )
 
 // StockRepo handles storing and retrival of stocks.
@@ -34,7 +34,7 @@ type pgStockRepo struct {
 
 const saveStockQuery = `
 	INSERT INTO stock(symbol, name, is_active, total_count, updated_at)
-	VALUES($1, $2, TRUE, $3, $4) ON CONFLICT ON symbol_pkey 
+	VALUES($1, $2, TRUE, $3, $4) ON CONFLICT ON CONSTRAINT stock_pkey 
 	DO UPDATE SET total_count = $3, updated_at = $4`
 
 // Save saves a stock.
@@ -51,8 +51,8 @@ const searchStockQuery = `
 	SELECT symbol, name, total_count FROM stock 
 	WHERE is_active = TRUE 
 	AND (
-		LOWER(name) LIKE $1 || '%' OR
-		LOWER(symbol) LIKE $1 || '%'
+		LOWER(symbol) LIKE $1 || '%' OR
+		LOWER(name) LIKE $1 || '%'
 	)
 	ORDER BY total_count DESC
 	LIMIT $2`

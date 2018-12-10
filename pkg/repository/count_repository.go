@@ -9,7 +9,7 @@ import (
 
 // Common errors.
 var (
-	ErrNoSuchStock = errors.New("No such stock.")
+	ErrNoSuchStock = errors.New("no such stock")
 )
 
 // CountRepo handles volume counting of stocks.
@@ -53,7 +53,7 @@ const countStocksQuery = `
 
 // CountAll counts the total tweet volume of all stocks in the system.
 func (cr *pgCountRepo) CountAll() ([]domain.Stock, error) {
-	rows, err := cr.db.Query(countStockQuery)
+	rows, err := cr.db.Query(countStocksQuery)
 	if err != nil {
 		return nil, err
 	}
