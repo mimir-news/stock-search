@@ -16,8 +16,8 @@ echo "Testing $SVC_NAME v: $SVC_VERSION commit: $SHORT_COMMIT. Test ID: $TEST_ID
 echo ""
 sleep 1
 
-NETWORK_NAME=mimir-net # "$SVC_NAME-network-$SHORT_COMMIT-$TEST_ID"
-# docker network create $NETWORK_NAME
+NETWORK_NAME="$SVC_NAME-network-$SHORT_COMMIT-$TEST_ID"
+docker network create $NETWORK_NAME
 
 # Database metadata
 DB_IMAGE='postgres:11.1-alpine'
@@ -56,12 +56,10 @@ docker run -d --name $SVC_CONTAINER_NAME \
     -v "$PWD/conf/token_secrets.json":$TOKEN_SECRETS_FILE:ro \
     $SVC_IMAGE
 
-docker logs $SVC_CONTAINER_NAME
-
 echo "Running tests"
 python test.py $SVC_PORT
 
 # Stopping containers
 docker stop $SVC_CONTAINER_NAME
 docker stop $DB_CONTAINER_NAME
-# docker network rm $NETWORK_NAME
+docker network rm $NETWORK_NAME
