@@ -1,0 +1,10 @@
+FROM czarsimon/godep:1.11.2-stretch
+
+# Copy source
+WORKDIR /go/src/stocksearch
+COPY . .
+
+# Install dependencies
+RUN dep ensure
+
+CMD ["bash", "run-tests.sh"]
