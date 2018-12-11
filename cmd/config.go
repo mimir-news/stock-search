@@ -16,8 +16,9 @@ const (
 )
 
 var (
-	unsecuredRoutes    = []string{"/health"}
-	defaultSearchLimit = 10
+	unsecuredRoutes        = []string{"/health"}
+	defaultSearchLimit     = 10
+	defaultSuggestionLimit = 5
 )
 
 type config struct {

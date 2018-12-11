@@ -18,6 +18,7 @@ var (
 type StockRepo interface {
 	Save(s domain.Stock) error
 	Search(query string, limit int) ([]domain.Stock, error)
+	FindMostCommon(excluded []string, limit int) ([]domain.Stock, error)
 }
 
 // NewStockRepo created a StockRepo using the default implementation.
@@ -68,6 +69,12 @@ func (pg *pgStockRepo) Search(query string, limit int) ([]domain.Stock, error) {
 	return mapRowsToStocks(rows)
 }
 
+// FindMostCommon finds the most common stocks
+// except the ones that contains the symbols provided.
+func (pg *pgStockRepo) FindMostCommon(excluded []string, limit int) ([]domain.Stock, error) {
+	return nil, nil
+}
+
 func mapRowsToStocks(rows *sql.Rows) ([]domain.Stock, error) {
 	stocks := make([]domain.Stock, 0)
 
@@ -94,6 +101,12 @@ type MockStockRepo struct {
 	SearchStocks      []domain.Stock
 	SearchErr         error
 	SearchInvocations int
+
+	FindMostCommonArgExcluded []string
+	FindMostCommonArgLimit    int
+	FindMostCommonStocks      []domain.Stock
+	FindMostCommonErr         error
+	FindMostCommonInvocations int
 }
 
 // UnsetArgs sets all repo arguments to their default value.
@@ -104,6 +117,10 @@ func (sr *MockStockRepo) UnsetArgs() {
 	sr.SearchArgQuery = ""
 	sr.SearchArgLimit = 0
 	sr.SearchInvocations = 0
+
+	sr.FindMostCommonArgExcluded = nil
+	sr.FindMostCommonArgLimit = 0
+	sr.FindMostCommonInvocations = 0
 }
 
 // Save mock implementation of saving a stock.
@@ -119,4 +136,12 @@ func (sr *MockStockRepo) Search(query string, limit int) ([]domain.Stock, error)
 	sr.SearchArgLimit = limit
 	sr.SearchInvocations++
 	return sr.SearchStocks, sr.SearchErr
+}
+
+// FindMostCommon mock implementation of finding common stocks.
+func (sr *MockStockRepo) FindMostCommon(excluded []string, limit int) ([]domain.Stock, error) {
+	sr.FindMostCommonArgExcluded = excluded
+	sr.FindMostCommonArgLimit = limit
+	sr.FindMostCommonInvocations++
+	return sr.FindMostCommonStocks, sr.FindMostCommonErr
 }

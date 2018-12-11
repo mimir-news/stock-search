@@ -81,6 +81,53 @@ func TestHandleStockSearch(t *testing.T) {
 
 }
 
+func TestHandleSuggestStocks(t *testing.T) {
+	assert := assert.New(t)
+
+	userID := id.New()
+	clientID := id.New()
+
+	expectedStocks := []domain.Stock{
+		domain.Stock{Symbol: "AAPL"},
+		domain.Stock{Symbol: "AMD"},
+	}
+
+	stockRepo := &repository.MockStockRepo{
+		FindMostCommonStocks: expectedStocks,
+	}
+
+	conf := getTestConfig()
+	server := newServer(getTestEnv(conf, stockRepo, nil), conf)
+	token := getTestToken(conf, userID, clientID)
+
+	req := createTestGetRequest(clientID, token, "/v1/stocks/suggestions?exclude=A,B")
+	res := performTestRequest(server.Handler, req)
+
+	assert.Equal(http.StatusOK, res.Code)
+	assert.Equal(1, stockRepo.FindMostCommonInvocations)
+	assert.Equal(defaultSuggestionLimit, stockRepo.FindMostCommonArgLimit)
+	var suggestions []stock.Stock
+	err := json.NewDecoder(res.Body).Decode(&suggestions)
+	assert.NoError(err)
+	assert.Equal(len(expectedStocks), len(suggestions))
+	for i, s := range suggestions {
+		assert.Equal(expectedStocks[i].Symbol, s.Symbol)
+	}
+
+	stockRepo.UnsetArgs()
+	req = createTestGetRequest(clientID, token, "/v1/stocks/suggestions?exclude=A,B&limit=10")
+	res = performTestRequest(server.Handler, req)
+
+	assert.Equal(1, stockRepo.FindMostCommonInvocations)
+	assert.Equal(10, stockRepo.FindMostCommonArgLimit)
+	err = json.NewDecoder(res.Body).Decode(&suggestions)
+	assert.NoError(err)
+	assert.Equal(len(expectedStocks), len(suggestions))
+	for i, s := range suggestions {
+		assert.Equal(expectedStocks[i].Symbol, s.Symbol)
+	}
+}
+
 func TestHandleStockRanking(t *testing.T) {
 	assert := assert.New(t)
 
