@@ -6,6 +6,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/lib/pq"
+
 	"github.com/mimir-news/pkg/dbutil"
 	"github.com/mimir-news/stock-search/pkg/domain"
 )
@@ -69,10 +71,21 @@ func (pg *pgStockRepo) Search(query string, limit int) ([]domain.Stock, error) {
 	return mapRowsToStocks(rows)
 }
 
+const suggestStocksQuery = `
+	SELECT symbol, name, total_count FROM stock 
+	WHERE is_active = TRUE AND symbol != ANY($1)
+	ORDER BY total_count DESC
+	LIMIT $2`
+
 // FindMostCommon finds the most common stocks
 // except the ones that contains the symbols provided.
 func (pg *pgStockRepo) FindMostCommon(excluded []string, limit int) ([]domain.Stock, error) {
-	return nil, nil
+	rows, err := pg.db.Query(suggestStocksQuery, pq.Array(excluded), limit)
+	if err != nil {
+		return nil, err
+	}
+
+	return mapRowsToStocks(rows)
 }
 
 func mapRowsToStocks(rows *sql.Rows) ([]domain.Stock, error) {

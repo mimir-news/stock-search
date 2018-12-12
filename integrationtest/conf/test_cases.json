@@ -123,6 +123,42 @@
             "response": {
                 "status": 401
             }
+        },
+        {
+            "name": "get-suggestions-except-TWTR",
+            "positive": true,
+            "request": {
+                "method": "GET",
+                "path": "/v1/stocks/suggestions?exclude=TWTR",
+                "withToken": true
+            },
+            "response": {
+                "status": 200
+            }
+        },
+        {
+            "name": "get-suggestions-except-TWTR-with-limit",
+            "positive": true,
+            "request": {
+                "method": "GET",
+                "path": "/v1/stocks/suggestions?exclude=TWTR&limit=3",
+                "withToken": true
+            },
+            "response": {
+                "status": 200
+            }
+        },
+        {
+            "name": "get-suggestions-except-none",
+            "positive": true,
+            "request": {
+                "method": "GET",
+                "path": "/v1/stocks/suggestions",
+                "withToken": true
+            },
+            "response": {
+                "status": 200
+            }
         }
     ]
 }
