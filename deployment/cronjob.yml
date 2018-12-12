@@ -1,0 +1,41 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: volume-count-trigger
+  labels:
+    app: volume-count-trigger
+spec:
+  schedule: "0 6 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: volume-count-trigger
+              image: eu.gcr.io/mimir-185212/http-trigger:1.0
+              env:
+                - name: LOGIN_URL
+                  value: http://directory:8080/v1/login
+                - name: TRIGGER_URL
+                  value: http://stock-search:8080/v1/stocks
+                - name: TRIGGER_METHOD
+                  value: PUT
+                - name: CLIENT_ID
+                  value: "volume-count-trigger/1.0"
+                - name: CREDENTIALS_FILE
+                  values: "/etc/mimir/httptrigger/admin_credentials.json"
+              volumeMounts:
+                - name: admin-credentials
+                  mountPath: /etc/mimir/httptrigger/admin_credentials.json
+                  subPath: admin_credentials.json
+          volumes:
+            - name: admin-credentials
+              secret:
+                secretName: stocksearch-admin-credentials
+                items:
+                  - key: content
+                    path: admin_credentials.json
+          imagePullSecrets:
+            - name: gcr-json-key
+                
