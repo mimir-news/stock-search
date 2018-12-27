@@ -1,0 +1,12 @@
+{
+    "name": "Get suggestions except TWTR",
+    "positive": true,
+    "request": {
+        "method": "GET",
+        "path": "/v1/stocks/suggestions?exclude=TWTR",
+        "useToken": true
+    },
+    "response": {
+        "status": 200
+    }
+}

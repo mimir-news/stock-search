@@ -1,0 +1,11 @@
+{
+    "name": "Search stock one name match",
+    "request": {
+        "method": "GET",
+        "path": "/v1/stocks?query=at",
+        "useToken": true
+    },
+    "response": {
+        "status": 200
+    }
+}

@@ -1,0 +1,11 @@
+{
+    "name": "get-suggestions-except-TWTR-with-limit",
+    "request": {
+        "method": "GET",
+        "path": "/v1/stocks/suggestions?exclude=TWTR&limit=3",
+        "useToken": true
+    },
+    "response": {
+        "status": 200
+    }
+}

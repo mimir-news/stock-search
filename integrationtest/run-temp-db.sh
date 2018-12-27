@@ -14,10 +14,6 @@ SVC_CONTAINER_NAME="$SVC_NAME-$SVC_VERSION-$SHORT_COMMIT-$TEST_ID"
 
 echo "Testing $SVC_NAME v: $SVC_VERSION commit: $SHORT_COMMIT. Test ID: $TEST_ID"
 echo ""
-sleep 1
-
-NETWORK_NAME="$SVC_NAME-network-$SHORT_COMMIT-$TEST_ID"
-docker network create $NETWORK_NAME
 
 # Database metadata
 DB_IMAGE='postgres:11.1-alpine'
@@ -25,7 +21,7 @@ DB_CONTAINER_NAME="$SVC_NAME-db-$TEST_ID"
 
 # Database setup
 echo "Starting database: $DB_CONTAINER_NAME"
-docker run -d --rm --name $DB_CONTAINER_NAME --net $NETWORK_NAME \
+docker run -d --rm --name $DB_CONTAINER_NAME -p 5432:5432 \
    -e POSTGRES_PASSWORD=password $DB_IMAGE
 
 echo "Sleeping for 5 seconds to make database ready"
@@ -37,29 +33,3 @@ docker exec -i $DB_CONTAINER_NAME psql -U streamlistner streamlistner < conf/sch
 docker exec -i $DB_CONTAINER_NAME psql -U postgres streamlistner < conf/db_user_setup.sql
 
 echo 'Database ready'
-
-# Service setup
-TOKEN_SECRETS_FILE='/etc/mimir/token_secrets.json'
-SVC_PORT=$(resttest get-port)
-
-echo "Starting service: $SVC_CONTAINER_NAME on port: $SVC_PORT"
-docker run -d --name $SVC_CONTAINER_NAME \
-    --network $NETWORK_NAME -p $SVC_PORT:8080 \
-    -e ADMIN_USER_ID="test-admin-id" \
-    -e TOKEN_SECRETS_FILE=$TOKEN_SECRETS_FILE \
-    -e SERVICE_PORT=8080 \
-    -e DB_HOST=$DB_CONTAINER_NAME \
-    -e DB_PORT=5432 \
-    -e DB_NAME="streamlistner" \
-    -e DB_USERNAME="stocksearch" \
-    -e DB_PASSWORD='password' \
-    -v "$PWD/conf/token_secrets.json":$TOKEN_SECRETS_FILE:ro \
-    $SVC_IMAGE
-
-echo "Running tests"
-resttest run $SVC_PORT
-
-# Stopping containers
-docker stop $SVC_CONTAINER_NAME
-docker stop $DB_CONTAINER_NAME
-docker network rm $NETWORK_NAME

@@ -1,0 +1,11 @@
+{
+    "name": "Count all stocks unauthorized",
+    "request": {
+        "method": "PUT",
+        "path": "/v1/stocks",
+        "useToken": false
+    },
+    "response": {
+        "status": 401
+    }
+}

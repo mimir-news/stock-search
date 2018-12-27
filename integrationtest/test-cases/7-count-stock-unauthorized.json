@@ -1,0 +1,11 @@
+{
+    "name": "Count stock unauthorized",
+    "request": {
+        "method": "PUT",
+        "path": "/v1/stocks/TWTR",
+        "useToken": false
+    },
+    "response": {
+        "status": 401
+    }
+}

@@ -1,0 +1,11 @@
+{
+    "name": "Count all stocks",
+    "request": {
+        "method": "PUT",
+        "path": "/v1/stocks",
+        "useToken": true
+    },
+    "response": {
+        "status": 200
+    }
+}

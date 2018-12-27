@@ -1,0 +1,11 @@
+{
+    "name": "Search stock one symbol match",
+    "request": {
+        "method": "GET",
+        "path": "/v1/stocks?query=TWT",
+        "useToken": true
+    },
+    "response": {
+        "status": 200
+    }
+}

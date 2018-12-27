@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
+	"github.com/mimir-news/pkg/dbutil"
 	"github.com/mimir-news/pkg/httputil"
 	"github.com/mimir-news/pkg/httputil/auth"
 )
@@ -47,5 +48,5 @@ func newRouter(e *env, conf config) *gin.Engine {
 }
 
 func (e *env) healthCheck() error {
-	return e.db.Ping()
+	return dbutil.IsConnected(e.db)
 }

@@ -1,0 +1,11 @@
+{
+    "name": "Search stocks multiple symbol matches",
+    "request": {
+        "method": "GET",
+        "path": "/v1/stocks?query=T",
+        "useToken": true
+    },
+    "response": {
+        "status": 200
+    }
+}

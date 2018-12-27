@@ -1,0 +1,11 @@
+{
+    "name": "Count stock",
+    "request": {
+        "method": "PUT",
+        "path": "/v1/stocks/TWTR",
+        "useToken": true
+    },
+    "response": {
+        "status": 200
+    }
+}

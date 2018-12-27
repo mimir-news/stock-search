@@ -1,0 +1,11 @@
+{
+    "name": "Count missing stock",
+    "request": {
+        "method": "PUT",
+        "path": "/v1/stocks/MISSING",
+        "useToken": true
+    },
+    "response": {
+        "status": 404
+    }
+}
