@@ -24,17 +24,18 @@ spec:
                 - name: CLIENT_ID
                   value: "volume-count-trigger/1.0"
                 - name: CREDENTIALS_FILE
-                  values: "/etc/mimir/httptrigger/admin_credentials.json"
+                  value: "/etc/mimir/httptrigger/admin_credentials.json"
               volumeMounts:
                 - name: admin-credentials
                   mountPath: /etc/mimir/httptrigger/admin_credentials.json
                   subPath: admin_credentials.json
+              imagePullPolicy: Always
           volumes:
             - name: admin-credentials
               secret:
-                secretName: stocksearch-admin-credentials
+                secretName: admin-users
                 items:
-                  - key: content
+                  - key: stocksearch.credentials
                     path: admin_credentials.json
           imagePullSecrets:
             - name: gcr-json-key

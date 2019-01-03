@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
         - name: stock-search
-          image: eu.gcr.io/mimir-185212/stock-search:0.1
+          image: eu.gcr.io/mimir-185212/stock-search:1.0
           ports:
             - name: svc-port
               containerPort: 8080
@@ -39,7 +39,7 @@ spec:
                   name: admin-users
                   key: stocksearch.id
             - name: TOKEN_SECRETS_FILE
-              values: "/etc/mimir/token_secrets.json"
+              value: "/etc/mimir/token_secrets.json"
           volumeMounts:
             - name: token-secrets
               mountPath: /etc/mimir/token_secrets.json
