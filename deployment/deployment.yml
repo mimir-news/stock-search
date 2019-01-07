@@ -21,7 +21,7 @@ spec:
             - name: SERVICE_PORT
               value: "8080"
             - name: DB_HOST
-              value: mimir-db
+              value: db-pooler 
             - name: DB_PORT
               value: "5432"
             - name: DB_NAME
@@ -40,6 +40,8 @@ spec:
                   key: stocksearch.id
             - name: TOKEN_SECRETS_FILE
               value: "/etc/mimir/token_secrets.json"
+            - name: GIN_MODE
+              value: release
           volumeMounts:
             - name: token-secrets
               mountPath: /etc/mimir/token_secrets.json
