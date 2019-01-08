@@ -25,7 +25,7 @@ spec:
             - name: DB_PORT
               value: "5432"
             - name: DB_NAME
-              value: streamlistener
+              value: stocksearch 
             - name: DB_USERNAME
               value: stocksearch
             - name: DB_PASSWORD
