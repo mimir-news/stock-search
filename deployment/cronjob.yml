@@ -6,6 +6,7 @@ metadata:
     app: volume-count-trigger
 spec:
   schedule: "0 6 * * *"
+  successfulJobsHistoryLimit: 1
   jobTemplate:
     spec:
       template:
