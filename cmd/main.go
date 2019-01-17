@@ -38,9 +38,8 @@ func newServer(e *env, conf config) *http.Server {
 	}
 }
 
-func newRouter(e *env, conf config) *gin.Engine {
-	authOpts := auth.NewOptions(
-		conf.tokenSecret, conf.tokenVerificationKey, unsecuredRoutes...)
+func newRouter(e *env, cfg config) *gin.Engine {
+	authOpts := auth.NewOptions(cfg.JWTCredentials, unsecuredRoutes...)
 	r := httputil.NewRouter(ServiceName, ServiceVersion, e.healthCheck)
 	r.Use(auth.RequireToken(authOpts))
 

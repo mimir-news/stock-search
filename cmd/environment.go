@@ -14,8 +14,8 @@ type env struct {
 	adminID  string
 }
 
-func setupEnv(conf config) *env {
-	db, err := conf.db.ConnectPostgres()
+func setupEnv(cfg config) *env {
+	db, err := cfg.db.ConnectPostgres()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -26,7 +26,7 @@ func setupEnv(conf config) *env {
 	return &env{
 		db:       db,
 		stockSvc: service.NewStockService(stockRepo, countRepo),
-		adminID:  conf.adminID,
+		adminID:  cfg.adminID,
 	}
 }
 
