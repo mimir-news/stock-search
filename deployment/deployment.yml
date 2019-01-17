@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
       - name: stock-search
-        image: eu.gcr.io/mimir-185212/stock-search:1.0
+        image: eu.gcr.io/mimir-185212/stock-search:1.1
         ports:
         - containerPort: 8080
           name: svc-port
@@ -43,7 +43,7 @@ spec:
             secretKeyRef:
               key: stocksearch.id
               name: admin-users
-        - name: TOKEN_SECRETS_FILE
+        - name: JWT_CREDENTIALS_FILE
           value: /etc/mimir/token_secrets.json
         - name: GIN_MODE
           value: release
@@ -61,6 +61,13 @@ spec:
         - mountPath: /etc/mimir/token_secrets.json
           name: token-secrets
           subPath: token_secrets.json
+        resources:
+          requests:
+            memory: 50Mi
+            cpu: "50m"
+          limits:
+            memory: 60Mi
+            cpu: "60m"
         imagePullPolicy: Always
       - name: linkerd-proxy
         image: gcr.io/linkerd-io/proxy:stable-2.1.0
