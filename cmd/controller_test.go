@@ -18,8 +18,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var testAdminID = id.New()
-
 func TestHandleStockSearch(t *testing.T) {
 	assert := assert.New(t)
 
@@ -141,7 +139,7 @@ func TestHandleStockRanking(t *testing.T) {
 
 	conf := getTestConfig()
 	server := newServer(getTestEnv(stockRepo, countRepo), conf)
-	token := getTestToken(conf, testAdminID, auth.AdminRole)
+	token := getTestToken(conf, id.New(), auth.AdminRole)
 
 	req := createTestPutRequest(token, "/v1/stocks/"+symbol)
 	res := performTestRequest(server.Handler, req)
@@ -175,8 +173,6 @@ func TestHandleStockRanking(t *testing.T) {
 func TestHandleStocksRanking(t *testing.T) {
 	assert := assert.New(t)
 
-	clientID := id.New()
-
 	coutedStocks := []domain.Stock{
 		domain.Stock{Symbol: "AAPL", Count: 10},
 		domain.Stock{Symbol: "GOOG", Count: 20},
@@ -189,7 +185,7 @@ func TestHandleStocksRanking(t *testing.T) {
 
 	conf := getTestConfig()
 	server := newServer(getTestEnv(stockRepo, countRepo), conf)
-	token := getTestToken(conf, testAdminID, clientID)
+	token := getTestToken(conf, id.New(), auth.AdminRole)
 
 	req := createTestPutRequest(token, "/v1/stocks")
 	res := performTestRequest(server.Handler, req)
@@ -219,7 +215,6 @@ func performTestRequest(r http.Handler, req *http.Request) *httptest.ResponseRec
 func getTestEnv(stockRepo repository.StockRepo, countRepo repository.CountRepo) *env {
 	return &env{
 		stockSvc: service.NewStockService(stockRepo, countRepo),
-		adminID:  testAdminID,
 	}
 }
 
@@ -229,7 +224,6 @@ func getTestConfig() config {
 			Issuer: "stock-search-test",
 			Secret: id.New(),
 		},
-		adminID: testAdminID,
 	}
 }
 

@@ -25,7 +25,6 @@ type config struct {
 	db             dbutil.Config
 	port           string
 	JWTCredentials auth.JWTCredentials
-	adminID        string
 }
 
 func getConfig() config {
@@ -35,7 +34,6 @@ func getConfig() config {
 		db:             dbutil.MustGetConfig("DB"),
 		JWTCredentials: jwtCredentials,
 		port:           mustGetenv("SERVICE_PORT"),
-		adminID:        mustGetenv("ADMIN_USER_ID"),
 	}
 }
 

@@ -27,10 +27,11 @@ func main() {
 func newServer(e *env, conf config) *http.Server {
 	r := newRouter(e, conf)
 
+	adminFilter := auth.AllowRoles(auth.AdminRole)
 	r.GET("/v1/stocks", e.handleStockSearch)
 	r.GET("/v1/stocks/suggestions", e.handleSuggestStocks)
-	r.PUT("/v1/stocks", e.handleStocksRanking)
-	r.PUT("/v1/stocks/:symbol", e.handleStockRanking)
+	r.PUT("/v1/stocks", adminFilter, e.handleStocksRanking)
+	r.PUT("/v1/stocks/:symbol", adminFilter, e.handleStockRanking)
 
 	return &http.Server{
 		Addr:    ":" + conf.port,

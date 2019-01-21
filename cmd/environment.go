@@ -11,7 +11,6 @@ import (
 type env struct {
 	db       *sql.DB
 	stockSvc service.StockService
-	adminID  string
 }
 
 func setupEnv(cfg config) *env {
@@ -26,7 +25,6 @@ func setupEnv(cfg config) *env {
 	return &env{
 		db:       db,
 		stockSvc: service.NewStockService(stockRepo, countRepo),
-		adminID:  cfg.adminID,
 	}
 }
 
